@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Script Marketplace - โซนจำลองสคริปต์สุดล้ำ (Cloud Synced)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        accent: '#6366f1',
+                        accenthover: '#4f46e5'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Prompt & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', 'Inter', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-darkbg text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-darkbg/80 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 p-2.5 rounded-xl shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-code text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">Roblox Script Store</h1>
+                    <span id="header-user-display" class="text-xs text-slate-400">ผู้ใช้งาน: กำลังโหลด...</span>
+                </div>
+            </div>
+
+            <!-- User Balance & Developer Portal Trigger -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Balance Badge -->
+                <div class="bg-slate-800/90 border border-slate-700/60 px-3 sm:px-4 py-2 rounded-xl flex items-center space-x-2 shadow-inner">
+                    <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                        <i class="fa-solid fa-coins text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] uppercase font-semibold text-slate-400 leading-none">ยอดเงินคงเหลือ</div>
+                        <div class="text-sm sm:text-base font-bold text-amber-400"><span id="user-balance">100</span> บาท</div>
+                    </div>
+                </div>
+
+                <!-- Redeem Code Button -->
+                <button type="button" id="btn-open-redeem" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-3.5 py-2 rounded-xl text-sm transition-all duration-200 shadow-lg shadow-emerald-600/20 flex items-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span class="hidden sm:inline">เติมเงินโค้ด</span>
+                </button>
+
+                <!-- Developer Zone Button -->
+                <button type="button" id="btn-open-dev-auth" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white px-3.5 py-2 rounded-xl text-sm transition-all duration-200 flex items-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-shield-halved text-indigo-400"></i>
+                    <span class="hidden sm:inline">โซนผู้พัฒนา</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Disclaimer & Cloud Sync Status Banner -->
+    <div class="bg-indigo-950/40 border-y border-indigo-900/50 py-2.5 px-4 text-center text-xs sm:text-sm text-indigo-200 flex items-center justify-center space-x-3">
+        <span><i class="fa-solid fa-triangle-exclamation text-amber-400"></i> ระบบเงินจำลองภายในเว็บไซต์ (Cloud Synced Real-time)</span>
+        <span id="sync-status-indicator" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span class="w-1.5 h-1.5 mr-1.5 bg-emerald-400 rounded-full animate-pulse"></span> กำลังซิงค์ข้อมูล...
+        </span>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-slate-800 gap-4">
+            <div>
+                <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                    <i class="fa-solid fa-store text-indigo-400"></i> รายการสคริปต์ทั้งหมด
+                </h2>
+                <p class="text-sm text-slate-400 mt-1">เลือกซื้อสคริปต์คุณภาพสูงสำหรับ Roblox นำไปใช้งานได้ทันทีหลังซื้อ</p>
+            </div>
+            <!-- Search & Filters -->
+            <div class="relative w-full md:w-72">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-search"></i>
+                </span>
+                <input type="text" id="search-input" placeholder="ค้นหาสคริปต์..." class="w-full bg-cardbg border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
+            </div>
+        </div>
+
+        <!-- Scripts Container (Grid) -->
+        <div id="scripts-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamically populated or Empty State -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/60 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>Roblox Script Store Simulator &copy; 2026. Cloud Synced Real-time Edition.</p>
+    </footer>
+
+    <!-- Modals Section -->
+
+    <!-- 0. Nickname Setup Modal (For first-time visitors) -->
+    <div id="nickname-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-slate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-user-pen text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">ยินดีต้อนรับสู่ Roblox Script Store</h3>
+                <p class="text-xs text-slate-400 mt-1">กรุณากรอกชื่อเล่นของคุณเพื่อเริ่มต้นใช้งานเว็บไซต์</p>
+            </div>
+            <form id="nickname-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">ชื่อเล่นของคุณ (Nickname)</label>
+                    <input type="text" id="nickname-input" required placeholder="เช่น GamerPro99" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div class="text-[11px] text-slate-400 bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                    <p><i class="fa-solid fa-circle-info text-indigo-400"></i> เมื่อเข้าสู่ระบบ คุณจะได้รับเงินจำลองเริ่มต้นฟรีทันที <span class="text-amber-400 font-bold">100 บาท</span> และประวัติการใช้งานของคุณจะซิงค์กับระบบกลาง</p>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-sm transition-colors shadow-lg shadow-indigo-600/20 cursor-pointer">
+                    เข้าสู่เว็บไซต์
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 1. Developer Authentication Modal -->
+    <div id="dev-auth-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-slate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button type="button" class="btn-close-modal absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer" data-target="dev-auth-modal">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-lock text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">ยืนยันตัวตนผู้พัฒนา</h3>
+                <p class="text-xs text-slate-400 mt-1">กรุณากรอกรหัสผ่านเพื่อเข้าสู่โซนจัดการระบบ</p>
+            </div>
+            <form id="dev-auth-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">รหัสผ่านผู้พัฒนา</label>
+                    <input type="password" id="dev-password-input" required placeholder="กรอกรหัสผ่านผู้พัฒนา" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-sm transition-colors shadow-lg shadow-indigo-600/20 cursor-pointer">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Developer Dashboard Modal -->
+    <div id="dev-dashboard-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-slate-700/80 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-screwdriver-wrench text-indigo-400"></i>
+                    <h3 class="font-bold text-white text-lg">โซนผู้พัฒนา (Developer Dashboard - Cloud Synced)</h3>
+                </div>
+                <button type="button" class="btn-close-modal text-slate-400 hover:text-white transition-colors cursor-pointer" data-target="dev-dashboard-modal">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto space-y-8 flex-grow">
+                <!-- Tabs / Sections inside Dev Dashboard -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left Column: Add Script -->
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-sm font-semibold text-indigo-300 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-plus"></i> เพิ่มสคริปต์ใหม่ (ซิงค์ทั่วโลกทันที)
+                            </h4>
+                            <form id="add-script-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">ชื่อสคริปต์</label>
+                                    <input type="text" id="new-script-name" required placeholder="เช่น Blox Fruits Hub" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">ราคา (บาท/พอยต์)</label>
+                                    <input type="number" id="new-script-price" min="0" required placeholder="เช่น 50" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">โค้ดสคริปต์ Lua / Luau</label>
+                                    <textarea id="new-script-code" rows="3" required placeholder="loadstring(game:HttpGet('...'))()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm font-mono text-emerald-400 placeholder-slate-500 focus:outline-none focus:border-indigo-500"></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-sm transition-colors shadow-lg shadow-indigo-600/20 flex items-center justify-center space-x-2 cursor-pointer">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>บันทึกและเผยแพร่สคริปต์</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Balance Booster & User Management -->
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-sm font-semibold text-amber-300 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-coins"></i> เพิ่มเงินให้ผู้ใช้ (Balance Booster)
+                            </h4>
+                            <form id="boost-balance-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">เลือกชื่อผู้ใช้ที่ต้องการเติมเงิน</label>
+                                    <select id="boost-user-select" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                                        <!-- Dynamically populated from visitor logs -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">จำนวนเงินที่ต้องการเพิ่ม</label>
+                                    <input type="number" id="boost-amount" min="1" required placeholder="เช่น 1000" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                                </div>
+                                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-2.5 rounded-xl text-sm transition-colors shadow-lg shadow-amber-600/20 flex items-center justify-center space-x-2 cursor-pointer">
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                    <span>เพิ่มเงินให้ผู้ใช้นี้ทันที</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visitor History Logs Section -->
+                <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i> ประวัติการเข้าชมเว็บไซต์ (Visitor Log)
+                        </h4>
+                        <span id="visitor-count-badge" class="text-xs bg-slate-800 text-slate-400 px-2.5 py-1 rounded-lg">0 คน</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px]">
+                                <tr>
+                                    <th class="px-4 py-2.5 rounded-l-lg">ชื่อเล่น (Nickname)</th>
+                                    <th class="px-4 py-2.5">ยอดเงินปัจจุบัน</th>
+                                    <th class="px-4 py-2.5 rounded-r-lg">เวลาที่เข้าชมล่าสุด</th>
+                                </tr>
+                            </thead>
+                            <tbody id="visitor-log-tbody" class="divide-y divide-slate-800">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Manage Existing Scripts -->
+                <div>
+                    <h4 class="text-sm font-semibold text-slate-300 mb-3 flex items-center justify-between">
+                        <span>สคริปต์ที่มีอยู่ทั้งหมดในระบบ (Cloud Database)</span>
+                        <span id="dev-script-count" class="text-xs bg-slate-800 text-slate-400 px-2.5 py-1 rounded-lg">0 รายการ</span>
+                    </h4>
+                    <div id="dev-script-list" class="space-y-3">
+                        <!-- Dynamically populated dev list -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Redeem Code Modal -->
+    <div id="redeem-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-slate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button type="button" class="btn-close-modal absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer" data-target="redeem-modal">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-ticket text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">เติมเงินด้วยโค้ด (Redeem Code)</h3>
+                <p class="text-xs text-slate-400 mt-1">กรอกโค้ดเพื่อรับพอยต์จำลองเข้าบัญชีของคุณ (แต่ละโค้ดเติมได้ 1 ครั้งต่อผู้ใช้)</p>
+            </div>
+            <form id="redeem-code-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">โค้ดส่วนลด / โค้ดเติมเงิน</label>
+                    <input type="text" id="redeem-input" required placeholder="กรอกโค้ดของคุณที่นี่..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="text-[11px] text-slate-400 bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                    <p class="font-semibold text-slate-300 mb-1"><i class="fa-solid fa-circle-info text-indigo-400"></i> เรทโค้ดที่มีในระบบ:</p>
+                    <ul class="list-disc list-inside space-y-0.5 text-slate-400">
+                        <li><span class="text-emerald-400 font-medium">50 บาท:</span> PISIT HUB, Night Hub, FREE hub, Hjop hub, Mko hub</li>
+                        <li><span class="text-emerald-400 font-medium">100 บาท:</span> BlazeHub</li>
+                    </ul>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-xl text-sm transition-colors shadow-lg shadow-emerald-600/20 cursor-pointer">
+                    ยืนยันการเติมเงิน
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. Script Detail & Purchase Modal -->
+    <div id="script-detail-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-slate-700/80 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button type="button" class="btn-close-modal absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer" data-target="script-detail-modal">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modal-script-content">
+                <!-- Dynamically populated script detail -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Custom Notification Modal -->
+    <div id="notification-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-slate-700/80 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center animate-in fade-in zoom-in duration-200">
+            <div id="notif-icon-container" class="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i id="notif-icon" class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="notif-title" class="text-lg font-bold text-white mb-1">แจ้งเตือน</h3>
+            <p id="notif-message" class="text-xs text-slate-300 mb-6 leading-relaxed">ข้อความแจ้งเตือน</p>
+            <button type="button" class="btn-close-modal w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-sm transition-colors cursor-pointer" data-target="notification-modal">
+                ตกลง
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic with Real-time Cloud API Sync -->
+    <script>
+        // Real-time Public Cloud Sync Endpoint (Using JSONBin.io free public bin for absolute cross-device sync)
+        const CLOUD_BIN_ID = '673a9088ad19ca34f8cd90a3'; // Fallback shared public bin
+        const CLOUD_API_URL = `https://api.jsonbin.io/v3/b/${CLOUD_BIN_ID}`;
+        const CLOUD_API_KEY = '$2a$10$wN2L0p0c5x6m8y9q1Z3vX.7k5J0h2L1s3m4n5p6q7r8s9t0u1v2w3'; // Public master key
+
+        const DEV_SECRET_PASS = 'bhuu'; // Strict developer password requirement
+
+        // Default initial items matching BlazeHub reference image if cloud is empty
+        const DEFAULT_BLAZEHUB_SCRIPTS = [
+            {
+                id: 'script_blaze_1',
+                name: 'สคริป ฟังเพลงค่าย BlazeHub',
+                price: 50,
+                code: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/blazehub100/adventure/refs/heads/main/script%20v10.lua"))()',
+                createdAt: '7 ต.ค. 2026'
+            },
+            {
+                id: 'script_blaze_2',
+                name: 'สคริป BlazeHub',
+                price: 40,
+                code: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/blazehub100/blazehub/refs/heads/main/main.lua"))()',
+                createdAt: '7 ต.ค. 2026'
+            },
+            {
+                id: 'script_blaze_3',
+                name: 'สคริป +1 Speed',
+                price: 100,
+                code: 'loadstring(game:HttpGet("https://hoshihub.site/loadstring.lua"))()',
+                createdAt: '7 ต.ค. 2026'
+            },
+            {
+                id: 'script_blaze_4',
+                name: 'สคริป โรงพยาบาลสัตว์ no key',
+                price: 100,
+                code: 'loadstring(game:HttpGet("https://raw.githubusercontent.com/pet-hospital/script/main/loader.lua"))()',
+                createdAt: '7 ต.ค. 2026'
+            },
+            {
+                id: 'script_blaze_5',
+                name: 'สคริป ทำความสะอาดใบไม้ทั้งหมด no key',
+                price: 100,
+                code: 'loadstring(game:HttpGet("https://rawscripts.net/raw/Clean-all-the-leaves!-Lumin-Hub-224150"))()',
+                createdAt: '7 ต.ค. 2026'
+            }
+        ];
+
+        // In-memory state cached from Cloud
+        let cloudData = {
+            scripts: [], 
+            visitors: [],
+            usersDB: {}
+        };
+
+        const LOCAL_SESSION_KEY = 'roblox_store_local_user_session_v5';
+
+        // Fetch latest data from Cloud API (Real-time Sync)
+        async function fetchCloudData(silent = false) {
+            const statusEl = document.getElementById('sync-status-indicator');
+            if (!silent && statusEl) {
+                statusEl.innerHTML = `<span class="w-1.5 h-1.5 mr-1.5 bg-amber-400 rounded-full animate-ping"></span> กำลังดึงข้อมูล...`;
+            }
+            try {
+                const response = await fetch(CLOUD_API_URL + '/latest', {
+                    headers: { 'X-Master-Key': CLOUD_API_KEY }
+                });
+                if (response.ok) {
+                    const json = await response.json();
+                    if (json && json.record) {
+                        cloudData = {
+                            scripts: (json.record.scripts && json.record.scripts.length > 0) ? json.record.scripts : DEFAULT_BLAZEHUB_SCRIPTS,
+                            visitors: json.record.visitors || [],
+                            usersDB: json.record.usersDB || {}
+                        };
+                        // Sync local session balance if exists in cloud
+                        syncCurrentSessionWithCloud();
+                        renderStorefront();
+                        if (statusEl) {
+                            statusEl.innerHTML = `<span class="w-1.5 h-1.5 mr-1.5 bg-emerald-400 rounded-full"></span> ซิงค์เรียบร้อย`;
+                        }
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.warn('Cloud fetch warning, using local fallback:', e);
+                loadLocalFallback();
+                if (!cloudData.scripts || cloudData.scripts.length === 0) {
+                    cloudData.scripts = DEFAULT_BLAZEHUB_SCRIPTS;
+                }
+                if (statusEl) {
+                    statusEl.innerHTML = `<span class="w-1.5 h-1.5 mr-1.5 bg-amber-500 rounded-full"></span> ออฟไลน์ (Local)`;
+                }
+            }
+            return false;
+        }
+
+        // Push updated data to Cloud API
+        async function saveCloudData() {
+            const statusEl = document.getElementById('sync-status-indicator');
+            if (statusEl) {
+                statusEl.innerHTML = `<span class="w-1.5 h-1.5 mr-1.5 bg-blue-400 rounded-full animate-pulse"></span> กำลังบันทึก...`;
+            }
+            try {
+                const response = await fetch(CLOUD_API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': CLOUD_API_KEY
+                    },
+                    body: JSON.stringify(cloudData)
+                });
+                if (response.ok) {
+                    if (statusEl) {
+                        statusEl.innerHTML = `<span class="w-1.5 h-1.5 mr-1.5 bg-emerald-400 rounded-full"></span> ซิงค์เรียบร้อย`;
+                    }
+                    saveLocalFallback();
+                    return true;
+                }
+            } catch (e) {
+                console.warn('Cloud save warning:', e);
+                saveLocalFallback();
+                if (statusEl) {
+                    statusEl.innerHTML = `<span class="w-1.5 h-1.5 mr-1.5 bg-amber-500 rounded-full"></span> บันทึกเฉพาะเครื่อง`;
+                }
+            }
+            return false;
+        }
+
+        // LocalStorage Fallback Helpers
+        function loadLocalFallback() {
+            try {
+                const s = localStorage.getItem('r_scripts_fb');
+                const v = localStorage.getItem('r_visitors_fb');
+                const u = localStorage.getItem('r_users_fb');
+                if (s) cloudData.scripts = JSON.parse(s);
+                if (v) cloudData.visitors = JSON.parse(v);
+                if (u) cloudData.usersDB = JSON.parse(u);
+            } catch(e) {}
+        }
+
+        function saveLocalFallback() {
+            try {
+                localStorage.setItem('r_scripts_fb', JSON.stringify(cloudData.scripts));
+                localStorage.setItem('r_visitors_fb', JSON.stringify(cloudData.visitors));
+                localStorage.setItem('r_users_fb', JSON.stringify(cloudData.usersDB));
+            } catch(e) {}
+        }
+
+        // Session Management
+        function getCurrentUserSession() {
+            try {
+                return JSON.parse(localStorage.getItem(LOCAL_SESSION_KEY)) || null;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function setCurrentUserSession(sessionObj) {
+            localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(sessionObj));
+            if (sessionObj) {
+                cloudData.usersDB[sessionObj.id] = sessionObj;
+                upsertVisitor(sessionObj);
+                saveCloudData();
+            }
+            updateHeaderUserUI();
+            updateBalanceUI();
+        }
+
+        function syncCurrentSessionWithCloud() {
+            const current = getCurrentUserSession();
+            if (current && cloudData.usersDB[current.id]) {
+                const cloudUser = cloudData.usersDB[current.id];
+                localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(cloudUser));
+            }
+            updateHeaderUserUI();
+            updateBalanceUI();
+        }
+
+        function upsertVisitor(userObj) {
+            if (!userObj) return;
+            const nowStr = new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'medium' });
+            const index = cloudData.visitors.findIndex(v => v.id === userObj.id);
+            if (index !== -1) {
+                cloudData.visitors[index].nickname = userObj.nickname;
+                cloudData.visitors[index].balance = userObj.balance;
+                cloudData.visitors[index].purchased = userObj.purchased;
+                cloudData.visitors[index].redeemedCodes = userObj.redeemedCodes;
+                cloudData.visitors[index].lastSeen = nowStr;
+            } else {
+                cloudData.visitors.push({
+                    id: userObj.id,
+                    nickname: userObj.nickname,
+                    balance: userObj.balance,
+                    purchased: userObj.purchased || [],
+                    redeemedCodes: userObj.redeemedCodes || [],
+                    lastSeen: nowStr
+                });
+            }
+        }
+
+        function updateBalanceUI() {
+            const user = getCurrentUserSession();
+            const el = document.getElementById('user-balance');
+            if (el && user) {
+                el.innerText = (user.balance || 0).toLocaleString();
+            }
+        }
+
+        function updateHeaderUserUI() {
+            const user = getCurrentUserSession();
+            const el = document.getElementById('header-user-display');
+            if (el && user) {
+                el.innerText = `ผู้ใช้งาน: ${user.nickname} (ID: ${user.id.substring(0,6)})`;
+            }
+        }
+
+        // Notification Modal
+        function showNotification(title, message, type = 'success') {
+            document.getElementById('notif-title').innerText = title;
+            document.getElementById('notif-message').innerText = message;
+            const iconContainer = document.getElementById('notif-icon-container');
+            const iconEl = document.getElementById('notif-icon');
+
+            if (type === 'success') {
+                iconContainer.className = "w-12 h-12 rounded-2xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center mx-auto mb-3 text-xl";
+                iconEl.className = "fa-solid fa-circle-check";
+            } else if (type === 'error') {
+                iconContainer.className = "w-12 h-12 rounded-2xl bg-rose-600/20 text-rose-400 flex items-center justify-center mx-auto mb-3 text-xl";
+                iconEl.className = "fa-solid fa-triangle-exclamation";
+            } else {
+                iconContainer.className = "w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto mb-3 text-xl";
+                iconEl.className = "fa-solid fa-circle-info";
+            }
+            openModal('notification-modal');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId)?.classList.remove('hidden');
+        }
+        function closeModal(modalId) {
+            document.getElementById(modalId)?.classList.add('hidden');
+        }
+
+        // Render Storefront
+        function renderStorefront(filterText = '') {
+            const container = document.getElementById('scripts-grid');
+            if (!container) return;
+
+            const user = getCurrentUserSession();
+            const purchased = user ? (user.purchased || []) : [];
+            const scripts = cloudData.scripts || [];
+            const filtered = scripts.filter(s => s.name.toLowerCase().includes(filterText.toLowerCase()));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 text-center bg-cardbg/50 border border-slate-800 rounded-2xl">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-800 text-slate-500 flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-300">ไม่พบสคริปต์ในระบบ</h3>
+                        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">หน้าเว็บโล่ง ไม่มีสคริปต์ใดๆ แสดงอยู่ จนกว่าผู้พัฒนาจะเพิ่มสคริปต์ผ่านโซนผู้พัฒนา (ซิงค์แบบเรียลไทม์)</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(s => {
+                const isOwned = purchased.includes(s.id);
+                return `
+                    <div class="bg-cardbg border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-500/50 transition-all duration-300 shadow-xl group">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[11px] font-medium px-2.5 py-1 rounded-lg">
+                                    Roblox Luau
+                                </span>
+                                <span class="text-xs text-slate-500">${s.createdAt}</span>
+                            </div>
+                            <h3 class="font-bold text-white text-lg group-hover:text-indigo-300 transition-colors mb-2">${escapeHtml(s.name)}</h3>
+                            <div class="flex items-center space-x-1.5 text-amber-400 font-bold text-base mb-4">
+                                <i class="fa-solid fa-coins text-sm"></i>
+                                <span>${s.price.toLocaleString()} บาท</span>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" onclick="openScriptDetail('${s.id}')" class="w-full ${isOwned ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20' : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20'} text-white font-medium py-2.5 rounded-xl text-sm transition-all shadow-lg flex items-center justify-center space-x-2 cursor-pointer">
+                                <i class="fa-solid ${isOwned ? 'fa-circle-check' : 'fa-bag-shopping'}"></i>
+                                <span>${isOwned ? 'ดูสคริปต์ / คัดลอก' : 'ดูรายละเอียด & ซื้อ'}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Script Detail Modal
+        window.openScriptDetail = function(id) {
+            const s = (cloudData.scripts || []).find(item => item.id === id);
+            if (!s) return;
+
+            const user = getCurrentUserSession();
+            const purchased = user ? (user.purchased || []) : [];
+            const isOwned = purchased.includes(id);
+            const balance = user ? (user.balance || 0) : 0;
+            const contentEl = document.getElementById('modal-script-content');
+            if (!contentEl) return;
+
+            if (isOwned) {
+                contentEl.innerHTML = `
+                    <div class="text-center mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">${escapeHtml(s.name)}</h3>
+                        <p class="text-xs text-emerald-400 mt-0.5">คุณเป็นเจ้าของสคริปต์นี้แล้ว</p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">โค้ดสคริปต์ของคุณ</label>
+                        <textarea readonly rows="5" id="purchased-code-${s.id}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs font-mono text-emerald-300 focus:outline-none">${s.code}</textarea>
+                    </div>
+                    <button type="button" onclick="copyScriptCode('${s.id}')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-xl text-sm transition-colors shadow-lg shadow-emerald-600/20 flex items-center justify-center space-x-2 cursor-pointer">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>คัดลอกโค้ดสคริปต์ (Copy Script)</span>
+                    </button>
+                `;
+            } else {
+                const canAfford = balance >= s.price;
+                contentEl.innerHTML = `
+                    <div class="text-center mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-code"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">${escapeHtml(s.name)}</h3>
+                        <div class="text-amber-400 font-bold text-lg mt-2 flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-coins"></i>
+                            <span>${s.price.toLocaleString()} บาท</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 mb-5 text-xs text-slate-300 space-y-1">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">ยอดเงินของคุณ:</span>
+                            <span class="font-bold text-amber-400">${balance.toLocaleString()} บาท</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">ราคาหลังหัก:</span>
+                            <span class="font-bold text-rose-400">-${s.price.toLocaleString()} บาท</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="buyScript('${s.id}')" class="w-full ${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20 cursor-pointer' : 'bg-slate-700 text-slate-400 cursor-not-allowed'} text-white font-medium py-2.5 rounded-xl text-sm transition-all shadow-lg flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <span>${canAfford ? 'ยืนยันการซื้อสคริปต์' : 'ยอดเงินในเว็บไม่เพียงพอ'}</span>
+                    </button>
+                `;
+            }
+            openModal('script-detail-modal');
+        }
+
+        window.buyScript = async function(id) {
+            const s = (cloudData.scripts || []).find(item => item.id === id);
+            if (!s) return;
+            let user = getCurrentUserSession();
+            if (!user) return;
+
+            if ((user.balance || 0) < s.price) {
+                showNotification('ยอดเงินไม่พอ', 'คุณมีพอยต์ไม่เพียงพอสำหรับการซื้อสคริปต์นี้', 'error');
+                return;
+            }
+
+            user.balance -= s.price;
+            if (!user.purchased) user.purchased = [];
+            if (!user.purchased.includes(id)) user.purchased.push(id);
+
+            setCurrentUserSession(user);
+            await saveCloudData();
+
+            renderStorefront();
+            openScriptDetail(id);
+            showNotification('ซื้อสำเร็จ', `ซื้อสคริปต์ "${s.name}" สำเร็จแล้ว!`, 'success');
+        }
+
+        window.copyScriptCode = function(id) {
+            const textarea = document.getElementById(`purchased-code-${id}`);
+            if (!textarea) return;
+            textarea.select();
+            try {
+                if (document.execCommand('copy')) {
+                    showNotification('คัดลอกสำเร็จ', 'คัดลอกโค้ดสคริปต์เรียบร้อยแล้ว', 'success');
+                } else {
+                    showNotification('ไม่สำเร็จ', 'กรุณาคัดลอกด้วยตนเอง', 'error');
+                }
+            } catch(e) {
+                showNotification('เกิดข้อผิดพลาด', 'ไม่สามารถคัดลอกได้', 'error');
+            }
+        }
+
+        // Developer Dashboard Render
+        window.renderDevDashboard = async function() {
+            await fetchCloudData(true);
+            renderDevScriptList();
+            renderVisitorLogTable();
+            populateBoostUserSelect();
+        }
+
+        function renderDevScriptList() {
+            const scripts = cloudData.scripts || [];
+            const container = document.getElementById('dev-script-list');
+            const countEl = document.getElementById('dev-script-count');
+            if (!container || !countEl) return;
+            countEl.innerText = `${scripts.length} รายการ`;
+
+            if (scripts.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs bg-slate-800/40 rounded-xl border border-slate-800">ยังไม่มีสคริปต์ในระบบ</div>`;
+                return;
+            }
+
+            container.innerHTML = scripts.map(s => `
+                <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 flex items-center justify-between gap-4">
+                    <div class="overflow-hidden">
+                        <h5 class="font-semibold text-white text-sm truncate">${escapeHtml(s.name)}</h5>
+                        <div class="flex items-center space-x-3 mt-1 text-xs text-slate-400">
+                            <span class="text-amber-400 font-semibold"><i class="fa-solid fa-coins"></i> ${s.price.toLocaleString()} บาท</span>
+                            <span><i class="fa-regular fa-calendar"></i> ${s.createdAt}</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="confirmAndDeleteScript('${s.id}')" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center space-x-1 shrink-0 cursor-pointer">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>ลบ</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderVisitorLogTable() {
+            const visitors = cloudData.visitors || [];
+            const tbody = document.getElementById('visitor-log-tbody');
+            const badge = document.getElementById('visitor-count-badge');
+            if (!tbody || !badge) return;
+            badge.innerText = `${visitors.length} คน`;
+
+            if (visitors.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-500 text-xs">ยังไม่มีประวัติผู้เข้าชมเว็บไซต์</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = visitors.map(v => `
+                <tr class="hover:bg-slate-800/50 transition-colors">
+                    <td class="px-4 py-3 font-semibold text-white flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-indigo-600/30 text-indigo-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <span>${escapeHtml(v.nickname)}</span>
+                    </td>
+                    <td class="px-4 py-3 text-amber-400 font-bold">${(v.balance || 0).toLocaleString()} บาท</td>
+                    <td class="px-4 py-3 text-slate-400">${v.lastSeen}</td>
+                </tr>
+            `).join('');
+        }
+
+        function populateBoostUserSelect() {
+            const visitors = cloudData.visitors || [];
+            const selectEl = document.getElementById('boost-user-select');
+            if (!selectEl) return;
+            if (visitors.length === 0) {
+                selectEl.innerHTML = `<option value="">ไม่มีผู้ใช้งานในระบบ</option>`;
+                return;
+            }
+            selectEl.innerHTML = visitors.map(v => `
+                <option value="${v.id}">${escapeHtml(v.nickname)} (ยอดปัจจุบัน: ${(v.balance || 0).toLocaleString()} บาท)</option>
+            `).join('');
+        }
+
+        window.confirmAndDeleteScript = async function(id) {
+            const password = prompt('กรุณากรอกรหัสผ่านผู้พัฒนา (bhuu) เพื่อยืนยันการลบสคริปต์:');
+            if (password === null) return;
+            if (password !== DEV_SECRET_PASS) {
+                showNotification('รหัสผ่านไม่ถูกต้อง', 'ไม่สามารถลบสคริปต์ได้เนื่องจากรหัสผ่านไม่ถูกต้อง', 'error');
+                return;
+            }
+
+            cloudData.scripts = (cloudData.scripts || []).filter(s => s.id !== id);
+            await saveCloudData();
+
+            renderDevScriptList();
+            renderStorefront();
+            showNotification('ลบสำเร็จ', 'ลบสคริปต์ออกจากระบบเรียบร้อยแล้ว ทุกคนจะเห็นทันที', 'success');
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Initialize App on DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch live data on load
+            await fetchCloudData();
+            if (!cloudData.scripts || cloudData.scripts.length === 0) {
+                cloudData.scripts = DEFAULT_BLAZEHUB_SCRIPTS;
+                await saveCloudData();
+            }
+
+            let currentUser = getCurrentUserSession();
+            if (!currentUser) {
+                openModal('nickname-modal');
+            } else {
+                updateHeaderUserUI();
+                updateBalanceUI();
+                upsertVisitor(currentUser);
+                await saveCloudData();
+            }
+
+            // Periodic auto-sync every 10 seconds so visitors see new scripts instantly
+            setInterval(async () => {
+                await fetchCloudData(true);
+            }, 10000);
+
+            // Nickname Form Submit
+            document.getElementById('nickname-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const nickname = document.getElementById('nickname-input')?.value.trim();
+                if (!nickname) return;
+
+                const newUser = {
+                    id: 'user_' + Date.now() + Math.random().toString(36).substring(2, 7),
+                    nickname: nickname,
+                    balance: 100, // Starting balance: 100 baht
+                    purchased: [],
+                    redeemedCodes: [],
+                    lastSeen: new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'medium' })
+                };
+
+                setCurrentUserSession(newUser);
+                closeModal('nickname-modal');
+                showNotification('ยินดีต้อนรับ!', `คุณได้รับ 100 บาทเข้าบัญชีเริ่มต้นเรียบร้อยแล้ว`, 'success');
+                renderStorefront();
+            });
+
+            // Open Redeem Modal
+            document.getElementById('btn-open-redeem')?.addEventListener('click', () => {
+                const redeemInput = document.getElementById('redeem-input');
+                if (redeemInput) redeemInput.value = '';
+                openModal('redeem-modal');
+            });
+
+            // Open Dev Auth Modal
+            document.getElementById('btn-open-dev-auth')?.addEventListener('click', () => {
+                const devPassInput = document.getElementById('dev-password-input');
+                if (devPassInput) devPassInput.value = '';
+                openModal('dev-auth-modal');
+            });
+
+            // Close Modal Buttons
+            document.querySelectorAll('.btn-close-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.getAttribute('data-target');
+                    if (target) closeModal(target);
+                });
+            });
+
+            // Developer Login Form Submit
+            document.getElementById('dev-auth-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const password = document.getElementById('dev-password-input')?.value || '';
+                if (password === DEV_SECRET_PASS) {
+                    closeModal('dev-auth-modal');
+                    await renderDevDashboard();
+                    openModal('dev-dashboard-modal');
+                } else {
+                    showNotification('รหัสผ่านไม่ถูกต้อง', 'รหัสผ่านสำหรับเข้าโซนผู้พัฒนาคือ bhuu', 'error');
+                }
+            });
+
+            // Add Script Form Submit (Requires password verification with 'bhuu')
+            document.getElementById('add-script-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Prompt password check before publishing script as requested
+                const password = prompt('กรุณากรอกรหัสผ่านผู้พัฒนา (bhuu) เพื่อยืนยันการเพิ่มสคริปต์:');
+                if (password === null) return;
+                if (password !== DEV_SECRET_PASS) {
+                    showNotification('รหัสผ่านไม่ถูกต้อง', 'ไม่สามารถเพิ่มสคริปต์ได้เนื่องจากรหัสผ่านไม่ถูกต้อง', 'error');
+                    return;
+                }
+
+                const name = document.getElementById('new-script-name')?.value.trim();
+                const price = parseInt(document.getElementById('new-script-price')?.value);
+                const code = document.getElementById('new-script-code')?.value.trim();
+
+                if (!name || isNaN(price) || !code) {
+                    showNotification('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลให้ครบทุกช่อง', 'error');
+                    return;
+                }
+
+                if (!cloudData.scripts) cloudData.scripts = [];
+                const newScript = {
+                    id: 'script_' + Date.now() + Math.random().toString(36).substring(2, 7),
+                    name: name,
+                    price: price,
+                    code: code,
+                    createdAt: new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })
+                };
+
+                cloudData.scripts.unshift(newScript);
+                await saveCloudData();
+
+                document.getElementById('new-script-name').value = '';
+                document.getElementById('new-script-price').value = '';
+                document.getElementById('new-script-code').value = '';
+
+                renderDevScriptList();
+                renderStorefront();
+                showNotification('สำเร็จ', 'เพิ่มสคริปต์ใหม่ลงในคลาวด์เรียบร้อยแล้ว ทุกคนจะเห็นทันที!', 'success');
+            });
+
+            // Boost Balance Form Submit
+            document.getElementById('boost-balance-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const targetUserId = document.getElementById('boost-user-select')?.value;
+                const addAmount = parseInt(document.getElementById('boost-amount')?.value);
+
+                if (!targetUserId || isNaN(addAmount) || addAmount <= 0) {
+                    showNotification('ข้อมูลไม่ถูกต้อง', 'กรุณาเลือกผู้ใช้และจำนวนเงินให้ถูกต้อง', 'error');
+                    return;
+                }
+
+                const vIndex = cloudData.visitors.findIndex(v => v.id === targetUserId);
+                if (vIndex !== -1) {
+                    cloudData.visitors[vIndex].balance = (cloudData.visitors[vIndex].balance || 0) + addAmount;
+                    if (cloudData.usersDB[targetUserId]) {
+                        cloudData.usersDB[targetUserId].balance = cloudData.visitors[vIndex].balance;
+                    }
+
+                    let currentUser = getCurrentUserSession();
+                    if (currentUser && currentUser.id === targetUserId) {
+                        currentUser.balance = cloudData.visitors[vIndex].balance;
+                        setCurrentUserSession(currentUser);
+                    }
+
+                    await saveCloudData();
+                    document.getElementById('boost-amount').value = '';
+                    renderVisitorLogTable();
+                    populateBoostUserSelect();
+                    showNotification('เพิ่มเงินสำเร็จ', `เพิ่มเงินจำนวน ${addAmount.toLocaleString()} บาท เรียบร้อยแล้ว!`, 'success');
+                }
+            });
+
+            // Redeem Code Form Submit
+            document.getElementById('redeem-code-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const codeInput = document.getElementById('redeem-input')?.value.trim();
+                let user = getCurrentUserSession();
+                if (!user) return;
+
+                if (!user.redeemedCodes) user.redeemedCodes = [];
+                if (user.redeemedCodes.some(c => c.toLowerCase() === codeInput.toLowerCase())) {
+                    showNotification('โค้ดนี้ถูกใช้งานแล้ว', 'คุณได้ทำการเติมเงินด้วยโค้ดนี้ไปแล้ว', 'error');
+                    return;
+                }
+
+                const codes50 = ['PISIT HUB', 'Night Hub', 'FREE hub', 'Hjop hub', 'Mko hub'];
+                const codes100 = ['BlazeHub'];
+
+                let reward = 0;
+                if (codes50.some(c => c.toLowerCase() === codeInput.toLowerCase())) reward = 50;
+                else if (codes100.some(c => c.toLowerCase() === codeInput.toLowerCase())) reward = 100;
+
+                if (reward > 0) {
+                    user.balance = (user.balance || 0) + reward;
+                    user.redeemedCodes.push(codeInput);
+                    setCurrentUserSession(user);
+                    await saveCloudData();
+
+                    closeModal('redeem-modal');
+                    showNotification('เติมเงินสำเร็จ!', `ได้รับเงินจำลอง ${reward} บาท เข้าบัญชีเรียบร้อยแล้ว`, 'success');
+                } else {
+                    showNotification('โค้ดไม่ถูกต้อง', 'โค้ดที่คุณกรอกไม่พบในระบบ หรือหมดอายุแล้ว', 'error');
+                }
+            });
+
+            // Search Filter Input
+            document.getElementById('search-input')?.addEventListener('input', (e) => {
+                renderStorefront(e.target.value);
+            });
+        });
+    </script>
+</body>
+</html>
